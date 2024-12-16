@@ -1,4 +1,3 @@
-/*eslint-env node*/
 /** @type {import('tailwindcss').Config} */
 export default {
     darkMode: ["class"],
@@ -13,6 +12,6 @@ export default {
   		colors: {}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plguins: [import("tailwindcss-animate")]
 }
 
