@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { getCurrentUser, logout } from "@/lib/authUtils";
+import {  logout } from "@/lib/authUtils";
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 
