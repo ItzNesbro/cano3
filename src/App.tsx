@@ -8,6 +8,8 @@ import Products from "./pages/Products";
 import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/Not-Found";
 import Navbar from "./components/layout/Navbar";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
 
 const App = () => {
   return (
@@ -18,7 +20,6 @@ const App = () => {
 
         <Navbar />
         <Routes>
-          {/* <Route path="/auth" element={<AuthLayout />} /> */}
           <Route
             path="/"
             element={
@@ -47,6 +48,18 @@ const App = () => {
             path="*"
             element={
               <NotFound />
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <SignUp />
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <Login />
             }
           />
         </Routes>

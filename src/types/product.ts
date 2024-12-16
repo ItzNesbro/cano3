@@ -6,4 +6,7 @@ export interface Product {
   image_url: string | null;
   created_at: string;
   updated_at: string;
+  discount: string | null;
+  multiple_colors: boolean | null;
+  colors?: string[] | null;
 }
