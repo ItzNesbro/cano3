@@ -9,10 +9,15 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const [selectedSets, setSelectedSets] = useState<any>();
   const [selectedColor, setSelectedColor] = useState<any>()
 
   const handleColorChange = (color: string) => {
     setSelectedColor(color);
+  };
+
+  const handleSetsChange = (sets: string) => {
+    setSelectedSets(sets);
   };
 
   return (
@@ -33,17 +38,41 @@ export function ProductCard({ product }: ProductCardProps) {
             <span className="text-muted-foreground ml-2">{product.discount}</span>
             {product.discount && <span className="text-muted-foreground ml-2">({((product.price * 1.2) - product.price).toFixed(2)}rs off)</span>}
             {product.multiple_colors && (
-              <select
-                value={selectedColor}
-                onChange={(e) => handleColorChange(e.target.value)}
-                className="ml-2 border border-gray-300 rounded-md p-2"
-              >
-                {product.colors?.map((color) => (
-                  <option key={color} value={color}>
-                    {color}
-                  </option>
-                ))}
-              </select>
+              <>
+                <span className="text-muted-foreground ml-2">|</span>
+                <select
+                  value={selectedColor}
+                  onChange={(e) => handleColorChange(e.target.value)}
+                  className="ml-2 text-center border border-zinc-200 text-white bg-transparent rounded-md p-1"
+                >
+                  {product.colors?.map((color) => (
+                    <>
+                      <option key={color} value={color}>
+                        {color}
+                      </option>
+                    </>
+                  ))}
+                </select>
+              </>
+            )}
+            {product.sets && (
+              <>
+                <span className="text-muted-foreground ml-2">|</span>
+                <select
+                  value={selectedSets}
+                  onChange={(e) => handleSetsChange(e.target.value)}
+                  className="ml-2 text-white text-center border border-zinc-200 bg-transparent rounded-md p-1"
+                >
+                  {product.sets?.map((set) => (
+                    <>
+                      <option key={set} value={set}>
+                        {set}
+                      </option>
+                    </>
+                  ))}
+                </select>
+                <span className="text-muted-foreground ml-2">Sets</span>
+              </>
             )}
           </span>
           <Button

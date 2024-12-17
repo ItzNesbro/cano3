@@ -8,12 +8,13 @@ export default function Products() {
     id: '1',
     name: "White Smoke",
     description: "The **White Smoke Grande** is a sleek, minimalist product that can really beautify your space with clean, modern aesthetic appeal. Its soft white finish, along with refined details, makes it a versatile product that blends easily with modern or classic decor. Best for those who love style and simplicity, the White Smoke Grande is perfect with both style and functionality within one sophisticated package.",
-    price: 50,
+    price: 60,
     image_url: "/white-smoke.jpg",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     discount: '16%',
-    multiple_colors: false
+    multiple_colors: false,
+    sets: ['5', '10', '20']
   });
   products.push({
     ...products[0],
@@ -26,11 +27,12 @@ export default function Products() {
     updated_at: new Date().toISOString(),
     discount: null,
     multiple_colors: true,
-    colors: ["red", "blue", "yellow"]
+    colors: ["red", "blue", "yellow"],
+    sets: ['5', '10', '20']
   })
 
   return (
-   <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1">

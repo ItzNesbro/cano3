@@ -9,4 +9,5 @@ export interface Product {
   discount: string | null;
   multiple_colors: boolean | null;
   colors?: string[] | null;
+  sets?: string[] | null;
 }
