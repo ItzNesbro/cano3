@@ -15,9 +15,7 @@ const Index = () => {
             Your premier destination for quality smoking accessories and premium products.
           </p>
           <Button size="lg" className="text-lg px-8 py-4 bg-zinc-500">
-            <Link to="/products">
-              <span className="text-zinc-50 font-bold">Shop Now</span>
-            </Link>
+            <Link to="/products" className="text-zinc-50 font-bold">Shop Now</Link>
           </Button>
         </div>
       </section>

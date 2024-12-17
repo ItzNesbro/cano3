@@ -1,14 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
-import { LogIn } from "lucide-react";
+import { LogIn, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { logout } from "@/lib/authUtils";
 import { useEffect, useState } from "react";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 const Navbar = () => {
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [numberOfCarts, setNumberOfCarts] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -38,6 +47,26 @@ const Navbar = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (loggedIn) {
+
+      const unsubscribe = auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          const ref = collection(db, "carts")
+          const q = query(ref, where("userId", "==", user.uid));
+
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            console.log(doc.id, " => ", doc.data());
+            setNumberOfCarts(querySnapshot.size);
+          })
+        }
+      });
+
+      return () => unsubscribe();
+    }
+  }, [loggedIn]);
 
   return (
     <nav className="bg-white shadow-sm">
@@ -88,12 +117,26 @@ const Navbar = () => {
               <span className="sr-only">Loading...</span>
             </div>
           ) : loggedIn ? (
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={handleLogout}>
-                <LogIn className="mr-2 h-4 w-4" />
-                Sign Out
-              </Button>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center space-x-4">
+                <Button variant="ghost">
+                  <User className="mr-2 h-4 w-4" />
+                  Account
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate("/cart")}>
+                  Cart <span className="ml-1 mr-1 font-bold text-gray-600">|</span> <span className="text-red-600">({numberOfCarts})</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/help")}>
+                  Help
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <div className="flex items-center">
               <Button
