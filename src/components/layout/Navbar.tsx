@@ -57,8 +57,7 @@ const Navbar = () => {
           const q = query(ref, where("userId", "==", user.uid));
 
           const querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            console.log(doc.id, " => ", doc.data());
+          querySnapshot.forEach(() => {
             setNumberOfCarts(querySnapshot.size);
           })
         }
@@ -119,10 +118,8 @@ const Navbar = () => {
           ) : loggedIn ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center space-x-4">
-                <Button variant="ghost">
                   <User className="mr-2 h-4 w-4" />
                   Account
-                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => navigate("/cart")}>

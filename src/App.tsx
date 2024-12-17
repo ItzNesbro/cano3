@@ -10,6 +10,7 @@ import NotFound from "./pages/Not-Found";
 import Navbar from "./components/layout/Navbar";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
+import Cart from "./pages/Cart";
 
 const App = () => {
   return (
@@ -60,6 +61,12 @@ const App = () => {
             path="/login"
             element={
               <Login />
+            }
+          />
+          <Route
+            path="/cart"
+            element={
+              <Cart />
             }
           />
         </Routes>
