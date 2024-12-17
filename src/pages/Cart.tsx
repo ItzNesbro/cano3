@@ -1,9 +1,7 @@
 import { ProductCard } from '@/components/products/ProductCard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { auth, db } from '@/lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { ShoppingBag } from 'lucide-react';
 import { useEffect, useState } from 'react'
 
 const Cart = () => {
