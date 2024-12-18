@@ -5,6 +5,7 @@ import { collection, deleteDoc, doc, getDocs, query, where } from 'firebase/fire
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Trash } from 'lucide-react';
+import Checkout from './Checkout';
 
 type CartItem = {
   id: string;
@@ -24,6 +25,8 @@ const Cart = () => {
   const [carts, setCarts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [checkouting, setCheckouting] = useState(false);
+  const [checkoutingItem, setCheckoutingItem] = useState<CartItem | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -84,6 +87,11 @@ const Cart = () => {
     }
   };
 
+  const handleCheckout = (item: CartItem) => {
+    setCheckouting(true);
+    setCheckoutingItem(item);
+  };
+
   return (
     <>
       {loading ? (
@@ -93,7 +101,7 @@ const Cart = () => {
       ) : loggedIn ? (
         <>
           {carts.length > 0 ? (
-            <div className="min-h-screen bg-background">
+            <div className={`min-h-screen bg-background ${checkouting ? 'hidden' : ''}`}>
               <section className="py-20 px-4 text-center">
                 <div className="max-w-3xl mx-auto">
                   <h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
@@ -131,9 +139,9 @@ const Cart = () => {
                               </div>
                             </div>
                             <div>
-                              <Button variant="default" size="sm" onClick={() => console.log(cartItem)}>
+                              <Button variant="default" size="sm" onClick={() => handleCheckout(cartItem)}>
                                 <ShoppingCart className="mr-2 h-4 w-4" />
-                                Buy
+                                Checkout
                               </Button>
                               <Button variant="destructive" className="ml-2" size="sm" onClick={() => handleDelete(cartItem.id)}>
                                 <Trash className="mr-2 h-4 w-4" />
@@ -158,6 +166,10 @@ const Cart = () => {
                 </div>
               </section>
             </div>
+          )}
+
+          {checkouting && checkoutingItem && (
+            <Checkout cartItems={[checkoutingItem]} />
           )}
         </>
       ) : (
