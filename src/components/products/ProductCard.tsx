@@ -13,8 +13,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [selectedSets, setSelectedSets] = useState<any>('5');
-  const [selectedColor, setSelectedColor] = useState<any>(null);
+  const [selectedSets, setSelectedSets] = useState<any>(product.sets ? product.sets[0] : 1);
+  const [selectedColor, setSelectedColor] = useState<any>(product.colors ? product.colors[0] : 'White');
   const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -28,53 +28,42 @@ export function ProductCard({ product }: ProductCardProps) {
     return () => unsubscribe();
   }, []);
 
-  const handleColorChange = (color: string) => {
-    setSelectedColor(color);
-  };
-
-  const handleSetsChange = (sets: string) => {
-    setSelectedSets(sets);
-  };
-
   const handleAddToCart = async () => {
-    if (loggedIn) {
-      try {
-        await addDoc(collection(db, "carts"), {
-          userId: auth.currentUser?.uid,
-          productId: product.id,
-          name: product.name,
-          price: product.price,
-          image_url: product.image_url,
-          discount: product.discount,
-          multiple_colors: product.multiple_colors,
-          sets: selectedSets,
-          color: selectedColor,
-          total: product.price * selectedSets,
-        }).then(() => {
-          toast({
-            title: "Added to cart",
-            description: product.name + " Product added to your cart successfully.",
-            variant: "default",
-          });
-        })
-      }
-      catch (error: any) {
-        toast({
-          title: "Error adding to cart",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
+    if (!loggedIn) {
+      toast({
+        title: "Login required",
+        description: "You must be logged in to add this product to your cart.",
+        variant: "destructive",
+      });
+      return;
     }
-  }
 
-  const handleLoginNotify = () => {
-    toast({
-      title: "Login required",
-      description: "You must be logged in to add this product to your cart.",
-      variant: "destructive",
-    });
-  }
+    try {
+      await addDoc(collection(db, "carts"), {
+        userId: auth.currentUser?.uid,
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        image_url: product.image_url,
+        discount: product.discount,
+        selectedColor,
+        selectedSets,
+        total: product.price * selectedSets,
+        createdAt: new Date(),
+      });
+      toast({
+        title: "Added to cart",
+        description: `${product.name} added to your cart.`,
+        variant: "default",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error adding to cart",
+        description: error.message || "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Card className="flex flex-col">
@@ -85,54 +74,55 @@ export function ProductCard({ product }: ProductCardProps) {
           className="w-full h-48 object-cover rounded-t-lg mb-4"
         />
         <CardTitle>{product.name}</CardTitle>
-        <CardDescription>{product.description}</CardDescription>
+        <CardDescription>{product.description || "No description available"}</CardDescription>
       </CardHeader>
       <CardContent className="mt-auto">
         <div className="flex justify-between items-center">
-          <span className="text-lg font-semibold">
-            {product.price.toFixed(2)}rs
-            <span className="text-muted-foreground ml-2">{product.discount}</span>
-            {product.discount && <span className="text-muted-foreground ml-2">({((product.price * 1.2) - product.price).toFixed(2)}rs off)</span>}
-            {product.multiple_colors && (
-              <>
-                <span className="text-muted-foreground ml-2">|</span>
+          <div>
+            <span className="text-lg font-semibold">
+              {product.price.toFixed(2)}rs
+              {product.discount && (
+                <span className="text-muted-foreground ml-2">
+                  ({product.discount}% off)
+                </span>
+              )}
+            </span>
+            {product.colors && (
+              <div className="mt-2">
+                <label className="mr-2">Color:</label>
                 <select
                   value={selectedColor}
-                  onChange={(e) => handleColorChange(e.target.value)}
-                  className="ml-2 text-center border border-zinc-200 text-white bg-transparent rounded-md p-1"
+                  onChange={(e) => setSelectedColor(e.target.value)}
+                  className="border border-zinc-200 rounded-md p-1"
                 >
-                  {product.colors?.map((color) => (
-                    <>
-                      <option key={color} value={color}>
-                        {color}
-                      </option>
-                    </>
+                  {product.colors.map((color) => (
+                    <option key={color} value={color}>
+                      {color}
+                    </option>
                   ))}
                 </select>
-              </>
+              </div>
             )}
             {product.sets && (
-              <>
-                <span className="text-muted-foreground ml-2">|</span>
+              <div className="mt-2">
+                <label className="mr-2">Sets:</label>
                 <select
                   value={selectedSets}
-                  onChange={(e) => handleSetsChange(e.target.value)}
-                  className="ml-2 text-white text-center border border-zinc-200 bg-transparent rounded-md p-1"
+                  onChange={(e) => setSelectedSets(parseInt(e.target.value))}
+                  className="border border-zinc-200 rounded-md p-1"
                 >
-                  {product.sets?.map((set) => (
-                    <>
-                      <option key={set} value={set}>
-                        {set}
-                      </option>
-                    </>
+                  {product.sets.map((set) => (
+                    <option key={set} value={set}>
+                      {set}
+                    </option>
                   ))}
                 </select>
-                <span className="text-muted-foreground ml-2">Sets</span>
-                <span className="text-muted-foreground ml-2">|</span>
-                <span className="text-muted-foreground ml-2">Total: {selectedSets * product.price}rs</span>
-              </>
+                <div className="mt-2">
+                  <span>Total: {(selectedSets * product.price).toFixed(2)}rs</span>
+                </div>
+              </div>
             )}
-          </span>
+          </div>
           {loading ? (
             <div role="status" className="flex items-center space-x-2">
               <svg
@@ -153,27 +143,15 @@ export function ProductCard({ product }: ProductCardProps) {
               </svg>
               <span className="sr-only">Loading...</span>
             </div>
-          ) : (loggedIn ? (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={handleAddToCart}
-            >
-              <ShoppingCart className="mr-2 h-4 w-4" />
-              Add to Cart
-            </Button>
           ) : (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => handleLoginNotify()}
-            >
+            <Button variant="default" size="sm" onClick={handleAddToCart}>
               <ShoppingCart className="mr-2 h-4 w-4" />
               Add to Cart
             </Button>
-          ))}
+          )}
         </div>
       </CardContent>
     </Card>
   );
 }
+
