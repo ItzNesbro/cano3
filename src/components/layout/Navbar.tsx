@@ -137,7 +137,17 @@ const Navbar = () => {
                         >
                           Sign Out
                         </DropdownMenuItem>
-                      )}
+                      ) || (
+                          <DropdownMenuItem
+                            onClick={() => {
+                              navigate("/login");
+                              setIsMobileMenuOpen(false);
+                            }}
+                          >
+                            Sign In
+                          </DropdownMenuItem>
+                        )
+                      }
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
