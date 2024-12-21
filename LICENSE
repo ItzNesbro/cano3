@@ -1,0 +1,34 @@
+# Custom Open-Source License
+
+Copyright (c) 2024 Nesbeer (itznesbro asnesbeer3@gmail.com)
+
+## 1. License Grant
+You are allowed to fork, modify, and distribute this software under the terms of this license. You may use the code for personal, educational, or commercial purposes, provided you comply with the following conditions.
+
+## 2. Branding Restrictions
+The use of the project’s **name**, **logo**, or any **branding elements** (including color scheme, fonts, icons, etc.) is strictly prohibited in any derived work **unless modified**. You must change the project’s name, logo, and any other visual elements (including but not limited to colors, fonts, or icons) before distributing your fork. Failure to do so will result in a violation of this license.
+
+## 3. Modifications
+When forking or modifying this project:
+- You **must modify** the branding elements (name, logo, color scheme, etc.) before distributing your fork.
+- You **must ensure** that the new branding is distinct from the original project in terms of visual identity.
+
+## 4. Attribution
+You must retain the original copyright notice and include an attribution statement that credits the original author(s) of the project. The attribution statement should be included in the `README` file or other documentation files of your fork, with a clear reference to the original author(s):
+> "This project is based on [CaNo3](https://github.com/ItzNesbro/cano3) by Nesbeer (itznesbro)."
+
+## 5. Commercial Use
+You may use the project for commercial purposes, provided the branding is modified as stated above.
+
+## 6. No Warranty
+This software is provided "as-is," without warranty of any kind, express or implied, including but not limited to the warranties of merchantability or fitness for a particular purpose.
+
+## 7. Termination
+If you violate any of the terms of this license, your rights to use, modify, and distribute the software will be automatically terminated.
+
+## 8. License Takedown
+If you distribute this software in violation of the above terms, the original author(s) may request the removal of your repository or any related materials through GitHub's DMCA Takedown process.
+
+---
+
+By forking or using this project, you agree to comply with the terms of this license.
