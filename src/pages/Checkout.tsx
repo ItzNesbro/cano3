@@ -2,17 +2,24 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import axios from 'axios'
 
 const Checkout = ({ cartItems }: { cartItems: any[] }) => {
   const [email, setEmail] = useState('');
   const [screenshot, setScreenshot] = useState<File | null>(null);
+  const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
+  const webhookUrl = import.meta.env.VITE_WEBHOOK
 
   const handleScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setScreenshot(file);
     }
+  };
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddress(e.target.value);
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,14 +33,24 @@ const Checkout = ({ cartItems }: { cartItems: any[] }) => {
     }
 
     setLoading(true);
-    const formData = new FormData();
-    formData.append('email', email);
-    formData.append('screenshot', screenshot);
-    formData.append('cartItems', JSON.stringify(cartItems));
-
     try {
-      // Replace with your actual API call.
-      // await axios.post('/api/submit-order', formData);
+      const payload = {
+        content: "New Order Received!",
+        embeds: [
+          {
+            title: "Order Details",
+            fields: [
+              { name: "Email", value: email, inline: true },
+              { name: "Address", value: address, inline: true },
+              { name: "Cart Items", value: cartItems.map(item => `${item.name}: ${item.price}, Sets: ${item.sets}, Colors: ${item.colors}, Total: ${item.total}`).join("\n") }
+            ],
+            image: {
+              url: screenshot
+            }
+          }
+        ]
+      };
+      await axios.post(webhookUrl, payload);
       console.log('Order submitted successfully!', cartItems[0]);
       alert('Order submitted successfully! Check your email for updates.');
     } catch (error) {
@@ -54,7 +71,7 @@ const Checkout = ({ cartItems }: { cartItems: any[] }) => {
           <strong>{cartItems[0].name}</strong> - ₹{cartItems[0].total}
         </p>
         <p className="text-gray-600 text-center mb-6">
-        <strong>UPI: {import.meta.env.VITE_UPI}</strong>
+          <strong>UPI: {import.meta.env.VITE_UPI}</strong>
         </p>
 
         <div className="mb-6">
@@ -81,6 +98,20 @@ const Checkout = ({ cartItems }: { cartItems: any[] }) => {
             accept="image/*"
             onChange={handleScreenshotChange}
             className="w-full"
+          />
+        </div>
+
+        <div className='mb-6'>
+          <Label htmlFor="address" className="block text-gray-700 mb-2">
+            Address
+          </Label>
+          <Input
+            id="address"
+            type="text"
+            placeholder="Enter your address, make sure it is correct"
+            className="w-full"
+            value={address}
+            onChange={handleAddressChange}
           />
         </div>
 
