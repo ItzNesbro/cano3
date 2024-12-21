@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import axios from 'axios'
+import { send } from 'emailjs-com';
+import { useNavigate } from 'react-router-dom';
 
 const Checkout = ({ cartItems }: { cartItems: any[] }) => {
   const [email, setEmail] = useState('');
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
-  const webhookUrl = import.meta.env.VITE_WEBHOOK
+  const navigate = useNavigate();
 
   const handleScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -34,25 +35,45 @@ const Checkout = ({ cartItems }: { cartItems: any[] }) => {
 
     setLoading(true);
     try {
-      const payload = {
-        content: "New Order Received!",
-        embeds: [
-          {
-            title: "Order Details",
-            fields: [
-              { name: "Email", value: email, inline: true },
-              { name: "Address", value: address, inline: true },
-              { name: "Cart Items", value: cartItems.map(item => `${item.name}: ${item.price}, Sets: ${item.sets}, Colors: ${item.colors}, Total: ${item.total}`).join("\n") }
-            ],
-            image: {
-              url: screenshot
-            }
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('screenshot', screenshot);
+      formData.append('address', address);
+      formData.append('item', cartItems[0].name);
+      formData.append('price', cartItems[0].total.toString());
+      formData.append('sets', cartItems[0].selectedSets.toString());
+      formData.append('color', cartItems[0].selectedColor);
+      await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
+        method: 'POST',
+        body: formData,
+      }).then((res) => res.json())
+        .then((_data) => {
+          const templateParams = {
+            email: email,
+            address: address,
+            item: cartItems[0].name,
+            price: cartItems[0].total,
+            color: cartItems[0].selectedColor,
+            sets: cartItems[0].selectedSets,
           }
-        ]
-      };
-      await axios.post(webhookUrl, payload);
-      console.log('Order submitted successfully!', cartItems[0]);
-      alert('Order submitted successfully! Check your email for updates.');
+          send(import.meta.env.VITE_SERVICE_ID,
+            import.meta.env.VITE_TEMPLATE_ID,
+            templateParams,
+            import.meta.env.VITE_PUBLIC_KEY)
+            .then((response) => {
+              console.log('Email sent:', response.status);
+              alert('Order submitted successfully!, please check your email for further instructions.');
+
+              navigate('/');
+            })
+            .catch((error) => {
+              console.error('Error sending email:', error);
+              alert('Something went wrong. Please try again later.');
+            })
+        }).catch((error) => {
+          console.error(error);
+          alert('Something went wrong. Please try again later.');
+        })
     } catch (error) {
       console.error('Error submitting order:', error);
       alert('Something went wrong. Please try again later.');

@@ -114,7 +114,7 @@ const Cart = () => {
                 <div className="max-w-6xl mx-auto">
                   <div className="grid md:grid-cols-3 gap-8">
                     {carts.map((cartItem: CartItem) => (
-                      <Card className="flex flex-col">
+                      <Card key={cartItem.id} className="flex flex-col">
                         <CardHeader>
                           <img
                             src={cartItem.image_url || "/placeholder.svg"}
